@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
+    alias(libs.plugins.detekt)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.android)
@@ -46,6 +47,7 @@ dependencies {
     implementation(composeBom)
     implementation(libs.androidx.activity.compose)
     implementation(libs.material)
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
 
     // Исправленные названия библиотек:
     implementation(libs.androidx.material3)
