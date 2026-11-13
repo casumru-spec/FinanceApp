@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.financeapp.reduce // <--- ДОБАВЛЕНО ДЛЯ ФУНКЦИИ REDUCE
 
 // Константы выносим на уровень файла
 private const val INCOME_AMOUNT = 500
@@ -59,7 +60,11 @@ internal fun FinanceAppScreen() {
 
             // 2. Кнопка дохода
             Button(onClick = {
-                val transaction = Transaction(INCOME_AMOUNT, TransactionType.INCOME)
+                val transaction = Transaction(
+                    INCOME_AMOUNT,
+                    TransactionType.INCOME,
+                    description = "Доход" // <--- ДОБАВЛЕНО ОПИСАНИЕ
+                )
                 state = reduce(state, MainUiEvent.AddTransaction(transaction))
             }) {
                 Text(text = stringResource(R.string.add_income_button))
@@ -67,7 +72,11 @@ internal fun FinanceAppScreen() {
 
             // 3. Кнопка расхода
             Button(onClick = {
-                val transaction = Transaction(EXPENSE_AMOUNT, TransactionType.EXPENSE)
+                val transaction = Transaction(
+                    EXPENSE_AMOUNT,
+                    TransactionType.EXPENSE,
+                    description = "Расход" // <--- ДОБАВЛЕНО ОПИСАНИЕ
+                )
                 state = reduce(state, MainUiEvent.AddTransaction(transaction))
             }) {
                 Text(text = stringResource(R.string.add_expense_button))
