@@ -13,7 +13,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FinanceAppTheme {
-                FinanceAppScreen()
+                // ВЫЗЫВАЕМ НОВЫЙ ЭКРАН (Шаг 38)
+                TransactionScreen()
             }
         }
     }

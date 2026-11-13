@@ -1,4 +1,4 @@
-package com.example.financeapp
+package com.example.financeapp.legacy
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.financeapp.R
+import com.example.financeapp.FinanceAppTheme
+import com.example.financeapp.MainUiState
+import com.example.financeapp.Transaction
+import com.example.financeapp.TransactionType
+import com.example.financeapp.reduce
+import com.example.financeapp.MainUiEvent
 
 // Константы выносим на уровень файла
 private const val INCOME_AMOUNT = 500
@@ -57,18 +64,32 @@ internal fun FinanceAppScreen() {
                 style = MaterialTheme.typography.headlineSmall,
             )
 
-            // 2. Кнопка дохода
+            // 2. Кнопка дохода (Добавили description)
             Button(onClick = {
-                val transaction = Transaction(INCOME_AMOUNT, TransactionType.INCOME)
-                state = reduce(state, MainUiEvent.AddTransaction(transaction))
+                val transaction = Transaction(
+                    amount = INCOME_AMOUNT,
+                    type = TransactionType.INCOME,
+                    description = "Старый доход"
+                )
+                state = reduce(
+                    state,
+                    MainUiEvent.AddTransaction(transaction)
+                )
             }) {
                 Text(text = stringResource(R.string.add_income_button))
             }
 
-            // 3. Кнопка расхода
+            // 3. Кнопка расхода (Добавили description)
             Button(onClick = {
-                val transaction = Transaction(EXPENSE_AMOUNT, TransactionType.EXPENSE)
-                state = reduce(state, MainUiEvent.AddTransaction(transaction))
+                val transaction = Transaction(
+                    amount = EXPENSE_AMOUNT,
+                    type = TransactionType.EXPENSE,
+                    description = "Старый расход"
+                )
+                state = reduce(
+                    state,
+                    MainUiEvent.AddTransaction(transaction)
+                )
             }) {
                 Text(text = stringResource(R.string.add_expense_button))
             }
