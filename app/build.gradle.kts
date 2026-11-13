@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.ksp)
 }
 
 detekt {
@@ -10,6 +11,15 @@ detekt {
     parallel = true
     ignoreFailures = false
     failOnSeverity = dev.detekt.gradle.extensions.FailOnSeverity.Warning
+}
+
+tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
+    System.getenv("JAVA_HOME")?.let { jdkHome.set(file(it)) }
+
+    reports {
+        html.required.set(true)
+        checkstyle.required.set(true)
+    }
 }
 
 tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
@@ -90,6 +100,9 @@ dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
 
     implementation(composeBom)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
