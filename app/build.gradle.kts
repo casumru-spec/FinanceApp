@@ -14,6 +14,15 @@ detekt {
 }
 
 tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
+    System.getenv("JAVA_HOME")?.let { jdkHome.set(file(it)) }
+
+    reports {
+        html.required.set(true)
+        checkstyle.required.set(true)
+    }
+}
+
+tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
     reports {
         html.required.set(true)
         checkstyle.required.set(true)
