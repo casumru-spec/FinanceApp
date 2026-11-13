@@ -15,7 +15,6 @@ internal class TransactionRepository(context: Context) {
     private val executor = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    // Шаг 16: Чтение в фоновом потоке
     fun load(onResult: (List<Transaction>?) -> Unit) {
         executor.execute {
             val transactions = try {
@@ -31,7 +30,6 @@ internal class TransactionRepository(context: Context) {
         }
     }
 
-    // Шаг 17: Запись в фоновом потоке
     fun save(transaction: Transaction, onResult: (Boolean) -> Unit) {
         executor.execute {
             val saved = try {
@@ -48,7 +46,6 @@ internal class TransactionRepository(context: Context) {
         }
     }
 
-    // Шаг 18: Закрытие базы данных
     fun close() {
         executor.execute(database::close)
         executor.shutdown()

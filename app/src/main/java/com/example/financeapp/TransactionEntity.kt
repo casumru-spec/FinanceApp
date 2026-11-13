@@ -10,15 +10,13 @@ internal data class TransactionEntity(
     val type: TransactionType,
     val description: String,
 ) {
-    fun toTransaction(): Transaction =
-        Transaction(amount = amount, type = type, description = description)
+    fun toTransaction(): Transaction = Transaction(amount = amount, type = type, description = description)
 
     companion object {
-        fun fromTransaction(transaction: Transaction): TransactionEntity =
-            TransactionEntity(
-                amount = transaction.amount,
-                type = transaction.type,
-                description = transaction.description,
-            )
+        fun fromTransaction(transaction: Transaction): TransactionEntity = TransactionEntity(
+            amount = transaction.amount,
+            type = transaction.type,
+            description = transaction.description,
+        )
     }
 }

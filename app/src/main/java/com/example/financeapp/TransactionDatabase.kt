@@ -18,11 +18,10 @@ internal abstract class TransactionDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
 
     companion object {
-        fun open(context: Context, name: String = DATABASE_NAME): TransactionDatabase =
-            Room.databaseBuilder(
-                context.applicationContext,
-                TransactionDatabase::class.java,
-                name,
-            ).build()
+        fun open(context: Context, name: String = DATABASE_NAME): TransactionDatabase = Room.databaseBuilder(
+            context.applicationContext,
+            TransactionDatabase::class.java,
+            name,
+        ).build()
     }
 }

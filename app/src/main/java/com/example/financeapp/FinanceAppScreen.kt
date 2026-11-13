@@ -21,16 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.financeapp.reduce // <--- ДОБАВЛЕНО ДЛЯ ФУНКЦИИ REDUCE
+import com.example.financeapp.reduce
 
-// Константы выносим на уровень файла
 private const val INCOME_AMOUNT = 500
 private const val EXPENSE_AMOUNT = 250
 
 @Composable
 @Suppress("FunctionNaming")
 internal fun FinanceAppScreen() {
-    // Создаем состояние
     var state by remember { mutableStateOf(MainUiState()) }
 
     Surface(
@@ -48,7 +46,6 @@ internal fun FinanceAppScreen() {
                 alignment = Alignment.CenterVertically,
             ),
         ) {
-            // 1. Текст с балансом и счетчиком
             Text(
                 text = stringResource(
                     R.string.balance_summary,
@@ -58,24 +55,22 @@ internal fun FinanceAppScreen() {
                 style = MaterialTheme.typography.headlineSmall,
             )
 
-            // 2. Кнопка дохода
             Button(onClick = {
                 val transaction = Transaction(
                     INCOME_AMOUNT,
                     TransactionType.INCOME,
-                    description = "Доход" // <--- ДОБАВЛЕНО ОПИСАНИЕ
+                    description = "Доход",
                 )
                 state = reduce(state, MainUiEvent.AddTransaction(transaction))
             }) {
                 Text(text = stringResource(R.string.add_income_button))
             }
 
-            // 3. Кнопка расхода
             Button(onClick = {
                 val transaction = Transaction(
                     EXPENSE_AMOUNT,
                     TransactionType.EXPENSE,
-                    description = "Расход" // <--- ДОБАВЛЕНО ОПИСАНИЕ
+                    description = "Расход",
                 )
                 state = reduce(state, MainUiEvent.AddTransaction(transaction))
             }) {

@@ -26,9 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 @Suppress("FunctionNaming")
-internal fun TransactionScreen(
-    viewModel: TransactionViewModel = viewModel(),
-) {
+internal fun TransactionScreen(viewModel: TransactionViewModel = viewModel()) {
     val state = viewModel.uiState
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -39,89 +37,97 @@ internal fun TransactionScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Заголовок и баланс
-            Text(stringResource(R.string.transaction_title), style = MaterialTheme.typography.headlineSmall)
-            Text(
-                stringResource(
-                    R.string.balance_summary,
-                    state.balance,
-                    state.transactionCount,
-                ),
-            )
+            // Вызовы функций теперь с маленькой буквы
+            transactionHeader(state)
 
-            // Индикатор загрузки (Шаг 24)
             if (state.isLoading) {
                 Text(stringResource(R.string.transaction_loading))
             }
 
-            // Поле описания
-            OutlinedTextField(
-                value = state.description,
-                onValueChange = { viewModel.onEvent(MainUiEvent.DescriptionChanged(it)) },
-                label = { Text(stringResource(R.string.transaction_description)) },
-                enabled = state.isDatabaseReady && !state.isSaving, // Блокировка
-                modifier = Modifier.fillMaxSize(fraction = 0.9f),
-            )
+            transactionForm(state, viewModel)
 
-            // Поле суммы
-            OutlinedTextField(
-                value = state.amount,
-                onValueChange = { viewModel.onEvent(MainUiEvent.AmountChanged(it)) },
-                label = { Text(stringResource(R.string.transaction_amount)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                enabled = state.isDatabaseReady && !state.isSaving, // Блокировка
-                modifier = Modifier.fillMaxSize(fraction = 0.9f),
-            )
+            transactionErrorDisplay(state)
 
-            // Выбор типа
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(
-                    selected = state.type == TransactionType.EXPENSE,
-                    onClick = { viewModel.onEvent(MainUiEvent.TypeChanged(TransactionType.EXPENSE)) },
-                    label = { Text(stringResource(R.string.transaction_expense)) },
-                    enabled = state.isDatabaseReady && !state.isSaving, // Блокировка
-                )
-                FilterChip(
-                    selected = state.type == TransactionType.INCOME,
-                    onClick = { viewModel.onEvent(MainUiEvent.TypeChanged(TransactionType.INCOME)) },
-                    label = { Text(stringResource(R.string.transaction_income)) },
-                    enabled = state.isDatabaseReady && !state.isSaving, // Блокировка
-                )
-            }
-
-            // Отображение ошибки
-            state.error?.let { error ->
-                val textId = when (error) {
-                    TransactionError.INVALID_INPUT -> R.string.transaction_invalid_input
-                    TransactionError.AMOUNT_TOO_LARGE -> R.string.transaction_amount_too_large
-                    TransactionError.DATABASE_ERROR -> R.string.transaction_database_error // Новая ошибка
-                }
-                Text(
-                    text = stringResource(textId),
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-
-            // Кнопка добавления
             Button(
                 onClick = viewModel::addTransaction,
-                enabled = state.isDatabaseReady && !state.isSaving, // Блокировка
+                enabled = state.isDatabaseReady && !state.isSaving,
             ) {
                 Text(stringResource(R.string.transaction_add))
             }
 
-            // История операций
-            if (state.transactions.isNotEmpty()) {
-                Text(stringResource(R.string.transaction_history), style = MaterialTheme.typography.titleMedium)
-                state.transactions.asReversed().forEach { tx ->
-                    val row = if (tx.type == TransactionType.INCOME) {
-                        R.string.transaction_history_income
-                    } else {
-                        R.string.transaction_history_expense
-                    }
-                    Text(stringResource(row, tx.description, tx.amount))
-                }
+            transactionHistory(state)
+        }
+    }
+}
+
+// Объявления функций тоже с маленькой буквы
+@Composable
+private fun transactionHeader(state: MainUiState) {
+    Text(stringResource(R.string.transaction_title), style = MaterialTheme.typography.headlineSmall)
+    Text(stringResource(R.string.balance_summary, state.balance, state.transactionCount))
+}
+
+@Composable
+private fun transactionForm(state: MainUiState, viewModel: TransactionViewModel) {
+    OutlinedTextField(
+        value = state.description,
+        onValueChange = { viewModel.onEvent(MainUiEvent.DescriptionChanged(it)) },
+        label = { Text(stringResource(R.string.transaction_description)) },
+        enabled = state.isDatabaseReady && !state.isSaving,
+        modifier = Modifier.fillMaxSize(fraction = 0.9f),
+    )
+
+    OutlinedTextField(
+        value = state.amount,
+        onValueChange = { viewModel.onEvent(MainUiEvent.AmountChanged(it)) },
+        label = { Text(stringResource(R.string.transaction_amount)) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        enabled = state.isDatabaseReady && !state.isSaving,
+        modifier = Modifier.fillMaxSize(fraction = 0.9f),
+    )
+
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FilterChip(
+            selected = state.type == TransactionType.EXPENSE,
+            onClick = { viewModel.onEvent(MainUiEvent.TypeChanged(TransactionType.EXPENSE)) },
+            label = { Text(stringResource(R.string.transaction_expense)) },
+            enabled = state.isDatabaseReady && !state.isSaving,
+        )
+        FilterChip(
+            selected = state.type == TransactionType.INCOME,
+            onClick = { viewModel.onEvent(MainUiEvent.TypeChanged(TransactionType.INCOME)) },
+            label = { Text(stringResource(R.string.transaction_income)) },
+            enabled = state.isDatabaseReady && !state.isSaving,
+        )
+    }
+}
+
+@Composable
+private fun transactionErrorDisplay(state: MainUiState) {
+    state.error?.let { error ->
+        val textId = when (error) {
+            TransactionError.INVALID_INPUT -> R.string.transaction_invalid_input
+            TransactionError.AMOUNT_TOO_LARGE -> R.string.transaction_amount_too_large
+            TransactionError.DATABASE_ERROR -> R.string.transaction_database_error
+        }
+        Text(
+            text = stringResource(textId),
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
+}
+
+@Composable
+private fun transactionHistory(state: MainUiState) {
+    if (state.transactions.isNotEmpty()) {
+        Text(stringResource(R.string.transaction_history), style = MaterialTheme.typography.titleMedium)
+        state.transactions.asReversed().forEach { tx ->
+            val row = if (tx.type == TransactionType.INCOME) {
+                R.string.transaction_history_income
+            } else {
+                R.string.transaction_history_expense
             }
+            Text(stringResource(row, tx.description, tx.amount))
         }
     }
 }
