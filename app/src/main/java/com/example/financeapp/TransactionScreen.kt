@@ -26,11 +26,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Suppress("FunctionNaming")
-internal fun TransactionScreen(
-    viewModel: TransactionViewModel,
-    showBalance: Boolean,
-    onOpenSettings: () -> Unit,
-) {
+internal fun TransactionScreen(viewModel: TransactionViewModel, showBalance: Boolean, onOpenSettings: () -> Unit) {
     val state = viewModel.uiState
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -41,12 +37,9 @@ internal fun TransactionScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Шаг 5: Кнопка настроек и заголовок
             TextButton(onClick = onOpenSettings) {
                 Text(stringResource(R.string.settings_title))
             }
-
-            // Условие для отображения баланса
             if (showBalance) {
                 Text(stringResource(R.string.balance_summary, state.balance, state.transactionCount))
             } else {

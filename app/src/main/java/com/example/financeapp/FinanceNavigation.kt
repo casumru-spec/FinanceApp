@@ -30,7 +30,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-// Константы маршрутов
 private const val TRANSACTIONS_ROUTE = "transactions"
 private const val SETTINGS_ROUTE = "settings"
 
@@ -62,14 +61,9 @@ internal fun FinanceNavigation() {
     }
 }
 
-// Экран настроек
 @Composable
 @Suppress("FunctionNaming")
-private fun SettingsScreen(
-    showBalance: Boolean,
-    onShowBalanceChange: (Boolean) -> Unit,
-    onBack: () -> Unit,
-) {
+private fun SettingsScreen(showBalance: Boolean, onShowBalanceChange: (Boolean) -> Unit, onBack: () -> Unit) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -99,7 +93,7 @@ private fun SettingsScreen(
                 )
                 Switch(
                     checked = showBalance,
-                    onCheckedChange = null, // Обработка клика идет через toggleable у Row
+                    onCheckedChange = null,
                 )
             }
 
