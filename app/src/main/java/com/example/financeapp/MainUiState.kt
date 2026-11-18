@@ -8,6 +8,10 @@ internal enum class TransactionType {
 internal enum class TransactionError {
     INVALID_INPUT,
     AMOUNT_TOO_LARGE,
+
+    DATABASE_ERROR,
+
+
 }
 
 internal data class Transaction(
@@ -24,6 +28,12 @@ internal data class MainUiState(
     val transactionCount: Int = 0,
     val transactions: List<Transaction> = emptyList(),
     val error: TransactionError? = null,
+
+    val isLoading: Boolean = true,
+    val isSaving: Boolean = false,
+    val isDatabaseReady: Boolean = false,
+
+
 )
 
 internal sealed interface MainUiEvent {
@@ -34,15 +44,21 @@ internal sealed interface MainUiEvent {
     data object InvalidTransaction : MainUiEvent
     data object AmountTooLarge : MainUiEvent
 }
+
+
+internal fun reduce(state: MainUiState, event: MainUiEvent): MainUiState = when (event) {
+
 // Эта функция нужна для работы старого экрана в папке legacy
 internal fun reduce(
     state: MainUiState,
     event: MainUiEvent,
 ): MainUiState = when (event) {
+
     is MainUiEvent.AddTransaction -> {
         val tx = event.transaction
         val change = if (tx.type == TransactionType.INCOME) tx.amount else -tx.amount
         val next = state.balance.toLong() + change
+
 
         if (next !in Int.MIN_VALUE.toLong()..Int.MAX_VALUE.toLong()) {
             state.copy(error = TransactionError.AMOUNT_TOO_LARGE)
@@ -54,5 +70,10 @@ internal fun reduce(
             )
         }
     }
+
     else -> state
 }
+
+    else -> state
+}
+
