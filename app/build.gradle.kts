@@ -1,7 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.detekt)
+
     alias(libs.plugins.ksp)
 }
 
@@ -60,29 +60,30 @@ val openDetektReport by tasks.registering(Exec::class) {
 
 tasks.named("detekt") {
     finalizedBy(openDetektReport)
+
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.android)
+
 }
 
 android {
     namespace = "com.example.financeapp"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.financeapp"
         minSdk = 24
         targetSdk = 37
-        versionCode = ciVersionCode ?: 1
-        versionName = ciVersionName ?: "1.0"
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            optimization {
-                enable = false
-            }
+            isMinifyEnabled = false
         }
     }
     compileOptions {
@@ -94,8 +95,13 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
+}
+
 dependencies {
-    detektPlugins("dev.detekt:detekt-rules-ktlint-wrapper:${libs.versions.detekt.get()}")
 
     val composeBom = platform(libs.androidx.compose.bom)
 
@@ -104,13 +110,25 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.material)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+
+    // Исправленные названия библиотек:
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling.preview)
+
+    implementation(libs.androidx.core.ktx)
+
+    // Библиотека для ViewModel (нужна для практики 07)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    debugImplementation(libs.androidx.ui.tooling)
+
     testImplementation(libs.junit)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+}
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "17"
 }

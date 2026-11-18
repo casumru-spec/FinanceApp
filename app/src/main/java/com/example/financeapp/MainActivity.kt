@@ -13,6 +13,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FinanceAppTheme {
+
+
                 TransactionScreen()
             }
         }
@@ -23,4 +25,8 @@ class MainActivity : ComponentActivity() {
 @Suppress("FunctionNaming")
 internal fun FinanceAppTheme(content: @Composable () -> Unit) {
     MaterialTheme(content = content)
+
 }
+
+}
+
