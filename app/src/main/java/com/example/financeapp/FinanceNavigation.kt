@@ -29,8 +29,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.financeapp.coroutines.AsyncTransactionsScreen
+import com.example.financeapp.coroutines.AsyncTransactionsViewModel
 
 private const val TRANSACTIONS_ROUTE = "transactions"
+private const val ASYNC_TRANSACTIONS_ROUTE = "async-transactions"
 private const val SETTINGS_ROUTE = "settings"
 
 @Composable
@@ -40,22 +43,33 @@ internal fun FinanceNavigation() {
     val transactionViewModel: TransactionViewModel = viewModel()
     var showBalance by rememberSaveable { mutableStateOf(true) }
 
-    NavHost(
-        navController = navController,
-        startDestination = TRANSACTIONS_ROUTE,
-    ) {
+    NavHost(navController = navController, startDestination = ASYNC_TRANSACTIONS_ROUTE) {
+        composable(ASYNC_TRANSACTIONS_ROUTE) {
+            val viewModel: AsyncTransactionsViewModel = viewModel()
+            AsyncTransactionsScreen(
+                viewModel = viewModel,
+                onOpenLegacy = {
+                    viewModel.cancelLoad()
+                    navController.navigate(TRANSACTIONS_ROUTE) { launchSingleTop = true }
+                },
+            )
+        }
         composable(TRANSACTIONS_ROUTE) {
             TransactionScreen(
                 viewModel = transactionViewModel,
                 showBalance = showBalance,
-                onOpenSettings = { navController.navigate(SETTINGS_ROUTE) },
+                onOpenSettings = {
+                    navController.navigate(SETTINGS_ROUTE) {
+                        launchSingleTop = true
+                    }
+                },
             )
         }
         composable(SETTINGS_ROUTE) {
             SettingsScreen(
                 showBalance = showBalance,
                 onShowBalanceChange = { showBalance = it },
-                onBack = { navController.popBackStack() },
+                onBack = { navController.navigateUp() },
             )
         }
     }
@@ -63,40 +77,29 @@ internal fun FinanceNavigation() {
 
 @Composable
 @Suppress("FunctionNaming")
-private fun SettingsScreen(showBalance: Boolean, onShowBalanceChange: (Boolean) -> Unit, onBack: () -> Unit) {
-    Surface(modifier = Modifier.fillMaxSize()) {
+private fun SettingsScreen(
+    showBalance: Boolean,
+    onShowBalanceChange: (Boolean) -> Unit,
+    onBack: () -> Unit,
+) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(
-                text = stringResource(R.string.settings_title),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-
+            Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .toggleable(
-                        value = showBalance,
-                        onValueChange = onShowBalanceChange,
-                        role = Role.Switch,
-                    ),
+                    .toggleable(value = showBalance, role = Role.Switch, onValueChange = onShowBalanceChange),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = stringResource(R.string.settings_show_balance),
-                    modifier = Modifier.weight(1f),
-                )
-                Switch(
-                    checked = showBalance,
-                    onCheckedChange = null,
-                )
+                Text(stringResource(R.string.settings_show_balance), modifier = Modifier.weight(1f))
+                Switch(checked = showBalance, onCheckedChange = null)
             }
-
             TextButton(onClick = onBack) {
                 Text(stringResource(R.string.settings_back))
             }
